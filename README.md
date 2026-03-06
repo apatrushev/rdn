@@ -1,5 +1,7 @@
 # rdn — Rust Dos Navigator
 
+[![Built With Ratatui](https://ratatui.rs/built-with-ratatui/badge.svg)](https://ratatui.rs/)
+
 <p align="center">
   <img src="logo.png" alt="rdn logo" width="600">
 </p>
