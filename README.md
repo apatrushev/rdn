@@ -4,6 +4,10 @@
   <img src="logo.png" alt="rdn logo" width="600">
 </p>
 
+<p align="center">
+  <img src="demo.gif" alt="rdn demo" width="800">
+</p>
+
 A modern terminal file manager written in Rust + [ratatui](https://github.com/ratatui/ratatui), visually inspired by the legendary [Dos Navigator](https://www.ritlabs.com/en/products/dn/) (1991–99) by RIT Research Labs.
 
 > **⚠️ Disclaimer:** This is a fun one-hour vibe-coding project made with neural networks. Please don't take it seriously. It's literally just feeding the original [Dos Navigator source code](https://github.com/maximmasiutin/Dos-Navigator) to an AI and asking it to rewrite the whole thing in Rust — and it somehow just worked. No deep engineering, no grand architecture, just vibes.
