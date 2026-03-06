@@ -66,10 +66,39 @@ pub fn delete_entry(path: &Path, use_trash: bool) -> FileOpResult {
         .unwrap_or_else(|| path.to_string_lossy().to_string());
 
     if use_trash {
-        trash::delete(path)
-            .map(|_| format!("Moved to trash: {}", name))
-            .map_err(|e| format!("Delete failed: {}", e))
-    } else if path.is_dir() {
+        match trash::delete(path) {
+            Ok(_) => return Ok(format!("Moved to trash: {}", name)),
+            Err(e) => {
+                // Fallback: if trash fails (e.g. no permission for Apple Events on macOS),
+                // try moving to ~/.Trash manually
+                #[cfg(target_os = "macos")]
+                {
+                    if let Some(home) = std::env::var_os("HOME") {
+                        let trash_dir = Path::new(&home).join(".Trash");
+                        let dest = trash_dir.join(&name);
+                        if trash_dir.is_dir() {
+                            let move_result = if path.is_dir() {
+                                // Use fs::rename, fall back to copy+delete
+                                fs::rename(path, &dest).or_else(|_| {
+                                    copy_dir_recursive(path, &dest)?;
+                                    fs::remove_dir_all(path)
+                                })
+                            } else {
+                                fs::rename(path, &dest)
+                            };
+                            if move_result.is_ok() {
+                                return Ok(format!("Moved to trash: {}", name));
+                            }
+                        }
+                    }
+                }
+                // If all trash methods failed, fall back to permanent deletion
+                eprintln!("Trash unavailable ({}), deleting permanently", e);
+            }
+        }
+    }
+
+    if path.is_dir() {
         fs::remove_dir_all(path)
             .map(|_| format!("Deleted directory: {}", name))
             .map_err(|e| format!("Delete failed: {}", e))
