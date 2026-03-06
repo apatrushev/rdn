@@ -115,6 +115,8 @@ pub enum FileOp {
     Move,
     Delete,
     MkDir,
+    Rename,
+    Quit,
 }
 
 /// Application mode
@@ -125,8 +127,128 @@ pub enum AppMode {
     QuickSearch(String),
     Dialog(DialogKind),
     Viewer(PathBuf),
+    Editor,
     Tetris,
     Help,
+    FileFind,
+    DirTree,
+    Calculator,
+    AsciiTable,
+    DiskInfo,
+    SelectPattern { selecting: bool }, // true = select, false = unselect
+    DirHistory,
+    FileHistory,
+    ViewerSearch,
+    PanelFilter,
+    DriveSelect,
+    UserMenu,
+    Menu,
+    ArchiveView,
+    SystemInfo,
+    EnvViewer,
+    ScreenSaver,
+    SplitFileDialog,
+    CombineFileDialog,
+    ThemeEditor,
+    DbfView,
+}
+
+/// Menu action identifiers
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum MenuAction {
+    Separator,
+    // Files menu
+    ViewFile,
+    EditFile,
+    EditNewFile,
+    Copy,
+    Move,
+    MakeDir,
+    Delete,
+    FileFind,
+    FileAttributes,
+    QuickRename,
+    TouchFile,
+    MakeFileList,
+    SplitFile,
+    CombineFile,
+    Quit,
+    // Commands menu
+    DirTree,
+    DirHistory,
+    CompareDirs,
+    CountDirSizes,
+    DirBranch,
+    SwapPanels,
+    SyncPanels,
+    UserMenu,
+    // Options/Utilities menu
+    Calculator,
+    AsciiTable,
+    DiskInfo,
+    Tetris,
+    ShowHidden,
+    QuickView,
+    SortMenu,
+    SelectGroup,
+    UnselectGroup,
+    InvertSelection,
+    SystemInfo,
+    EnvViewer,
+    // Encode/decode
+    Base64Encode,
+    Base64Decode,
+    UUEncode,
+    UUDecode,
+    // Theme / descriptions
+    ThemeEditor,
+    ToggleDescPanel,
+    FileHistory,
+    ConfirmSettings,
+    // Panel items
+    PanelBrief,
+    PanelFull,
+    SortName,
+    SortExt,
+    SortSize,
+    SortDate,
+    SortUnsorted,
+    PanelFilter,
+    PanelReread,
+    ChangeDriveLeft,
+    ChangeDriveRight,
+    Help,
+    RefreshDisplay,
+    SaveDesktop,
+    LoadDesktop,
+}
+
+/// A single menu item (label, shortcut display, action)
+#[derive(Debug, Clone)]
+pub struct MenuItem {
+    pub label: String,
+    pub shortcut: String,
+    pub action: MenuAction,
+}
+
+impl MenuItem {
+    pub fn item(label: &str, shortcut: &str, action: MenuAction) -> Self {
+        MenuItem {
+            label: label.to_string(),
+            shortcut: shortcut.to_string(),
+            action,
+        }
+    }
+    pub fn separator() -> Self {
+        MenuItem {
+            label: String::new(),
+            shortcut: String::new(),
+            action: MenuAction::Separator,
+        }
+    }
+    pub fn is_separator(&self) -> bool {
+        self.action == MenuAction::Separator
+    }
 }
 
 /// Dialog types
@@ -136,6 +258,7 @@ pub enum DialogKind {
         title: String,
         message: String,
         op: FileOp,
+        value: Option<String>,
     },
     Input {
         title: String,
@@ -145,4 +268,16 @@ pub enum DialogKind {
     },
     Error(String),
     FileInfo,
+    Attributes,
+    AttributesEdit {
+        path: PathBuf,
+        mode: u32,          // unix permission bits
+        readonly: bool,
+        cursor: u8,         // which field is selected (0=readonly, 1-9=rwxrwxrwx)
+    },
+    CompareResult(String),
+    SortMenu,
+    ConfirmSettings {
+        cursor: u8,  // 0=delete, 1=overwrite, 2=exit
+    },
 }

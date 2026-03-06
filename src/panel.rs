@@ -14,6 +14,7 @@ pub struct Panel {
     pub panel_mode: PanelMode,
     pub show_hidden: bool,
     pub visible_height: usize,
+    pub filter: Option<String>, // wildcard filter e.g. "*.rs"
 }
 
 impl Panel {
@@ -27,6 +28,7 @@ impl Panel {
             panel_mode: PanelMode::Brief,
             show_hidden: false,
             visible_height: 20,
+            filter: None,
         };
         panel.load_directory();
         panel
@@ -74,6 +76,15 @@ impl Panel {
                     ),
                     Err(_) => (0, None, false, false, false),
                 };
+
+                // Apply filter (only to files, dirs always shown)
+                if !is_dir {
+                    if let Some(ref filter) = self.filter {
+                        if !Self::matches_wildcard(&name, filter) {
+                            continue;
+                        }
+                    }
+                }
 
                 let is_executable = Self::check_executable(&path, &metadata);
 
