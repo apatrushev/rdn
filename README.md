@@ -1,4 +1,4 @@
-# rdn — Rust Dos Navigator
+# rdn — Rusty Dos Navigator
 
 [![Built With Ratatui](https://ratatui.rs/built-with-ratatui/badge.svg)](https://ratatui.rs/)
 
