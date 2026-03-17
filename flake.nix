@@ -31,10 +31,6 @@
               libx11
               libxi
               libxrandr
-            ]
-            ++ lib.optionals stdenv.isDarwin [
-              darwin.apple_sdk.frameworks.AppKit
-              darwin.apple_sdk.frameworks.ApplicationServices
             ];
 
           meta = with pkgs.lib; {
